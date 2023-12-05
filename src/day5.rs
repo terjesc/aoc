@@ -21,7 +21,7 @@ pub fn solve(input: String) {
         .map(|number| number.parse::<i64>().unwrap())
         .collect();
 
-    println!("Seeds: {:?}", seeds);
+//    println!("Seeds: {:?}", seeds);
 
     assert_eq!(input.next().unwrap(), "");
 
@@ -82,7 +82,7 @@ pub fn solve(input: String) {
             .map(|numbers| (numbers[0], numbers[0] + numbers[1] - 1))
             .collect();
 
-    println!("{:?}", seed_ranges);
+//    println!("{:?}", seed_ranges);
 
     // Helper function: Extract overlap (intersection)
     fn intersection(a: &(i64, i64), b: &(i64, i64)) -> Option<(i64, i64)> {
@@ -122,39 +122,43 @@ pub fn solve(input: String) {
     let location_ranges = conversion_maps.iter()
             .fold(seed_ranges, |acc, map| {
                 let mut next_acc: Vec<(i64, i64)> = Vec::new();
-//                let mut remaining_acc: Vec<(i64, i64)> = Vec::new();
+                let mut remaining_acc: Vec<(i64, i64)> = Vec::new();
 
                 // Handle all input ranges
                 for input_range in acc {
-//                    let mut remaining_range: Vec<(i64, i64)> = Vec::new();
-//                    remaining_range.push(input_range);
+                    let mut remaining_range: Vec<(i64, i64)> = Vec::new();
+                    remaining_range.push(input_range);
 
                     // Iterate through conversion map ranges
                     for range in map.map.iter() {
                         if let Some(overlap) = intersection(&input_range, &(range.start, range.end)) {
-                            println!("overlap: {:?}", overlap);
+//                            println!("overlap: {:?}", overlap);
                             // Remove overlap from remaining_range
-//                            let remaining_range_acc: Vec<(i64, i64)> = remaining_range.iter()
-//                                .flat_map(|range| {
-//                                    remainder(range, &overlap)
-//                                })
-//                                .flatten()
-//                                .collect();
-//                            remaining_range = remaining_range_acc;
+                            let remaining_range_acc: Vec<(i64, i64)> = remaining_range.iter()
+                                .flat_map(|range| {
+                                    remainder(range, &overlap)
+                                })
+                                .flatten()
+                                .collect();
+                            remaining_range = remaining_range_acc;
 
                             next_acc.push((overlap.0 + range.offset, overlap.1 + range.offset));
                         }
                     }
-//                    remaining_acc.append(&mut remaining_range);
+                    remaining_acc.append(&mut remaining_range);
                 }
-                println!("");
+//                println!("");
 
-//                next_acc.append(&mut remaining_acc);
-                println!("List of ranges after conversion completed: {:?}", next_acc);
+                next_acc.append(&mut remaining_acc);
+//                println!("List of ranges after conversion completed: {:?}", next_acc);
                 next_acc
             });
 
-    println!("{:?}", location_ranges);
+//    println!("{:?}", location_ranges);
+
+    let part2 = location_ranges.iter().map(|(start, _end)| start).min().unwrap();
+
+    println!("Day 5 part 2: {}", part2);
 }
 
 
