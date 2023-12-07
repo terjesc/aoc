@@ -7,6 +7,12 @@ struct Hand {
     cards: Vec<char>,
 }
 
+impl Hand {
+    fn convert_jacks_into_jokers(&mut self) {
+        self.cards = self.cards.iter().map(|&card| if card == 'J' { 'X' } else { card }).collect();
+    }
+}
+
 #[derive(Debug, PartialEq, Eq)]
 struct ParseHandError;
 
@@ -45,6 +51,7 @@ impl Ord for Hand {
                     '4' => 11,
                     '3' => 12,
                     '2' => 13,
+                    'X' => 14, // Used for Jokers in part2
                     _ => unreachable!(),
                 }
             }
@@ -72,6 +79,12 @@ impl PartialOrd for Hand {
 struct HandWithBid {
     hand: Hand,
     bid: i64,
+}
+
+impl HandWithBid {
+    fn convert_jacks_into_jokers(&mut self) {
+        self.hand.convert_jacks_into_jokers();
+    }
 }
 
 #[derive(Debug, PartialEq, Eq)]
@@ -130,6 +143,21 @@ impl Hand {
         frequencies.sort();
         frequencies.reverse();
 
+        let joker_count = self.cards.clone().into_iter().filter(|&card| card == 'X').count();
+
+        // Observation:
+        // It is always best to join all jokers with the largest group of identical non-joker cards
+
+        // Move the group of jokers to the largest other group of same-valued cards
+        if joker_count > 0 {
+            frequencies.remove(frequencies.iter().position(|x| *x == joker_count).unwrap());
+
+            if frequencies.is_empty() {
+                frequencies.push(0);
+            }
+            frequencies[0] += joker_count;
+        }
+
         match frequencies[..] {
             [5] => HandType::FiveOfAKind,
             [4, 1] => HandType::FourOfAKind,
@@ -158,4 +186,19 @@ pub fn solve(input: String) {
             .sum();
 
     println!("Day 7 part 1: {}", part1);
+
+    for hand in &mut hands {
+        hand.convert_jacks_into_jokers();
+    }
+
+    hands.sort();
+
+    let part2: i64 = hands.iter().rev()
+            .enumerate()
+            .map(|(rank, hand)| {
+                (rank + 1) as i64 * hand.bid
+            })
+            .sum();
+
+    println!("Day 7 part 2: {}", part2);
 }
