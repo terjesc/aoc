@@ -48,11 +48,19 @@ pub fn solve(input: String) {
 
     println!("{:?}", current);
 
-    fn are_all_ending(locations: &Vec<String>) -> bool {
-        locations.into_iter().all(|location| location.chars().nth(2) == Some('Z'))
+    #[derive(Clone, Debug)]
+    struct Cycle {
+        start: Option<usize>,
+        length: Option<usize>,
     }
 
-    while !are_all_ending(&current) {
+    let mut cycles: Vec<Cycle> = vec![Cycle { start: None, length: None }; current.len()];
+
+    fn are_all_known(cycles: &Vec<Cycle>) -> bool {
+        cycles.into_iter().all(|cycle| cycle.start.is_some() && cycle.length.is_some())
+    }
+
+    while !are_all_known(&cycles) {
         count += 1;
         let direction = directions2.next().unwrap();
 
@@ -69,9 +77,29 @@ pub fn solve(input: String) {
                     }
                 })
                 .collect();
+
+        for (index, location) in current.iter().enumerate() {
+            if location.chars().nth(2) == Some('Z') {
+                if cycles[index].start.is_none() {
+                    cycles[index].start = Some(count);
+                } else if  cycles[index].length.is_none() {
+                    cycles[index].length = Some(count - cycles[index].start.unwrap());
+                }
+            }
+        }
     }
 
-    let part2 = count;
+    // Observation: The data set is such that the path to the start of the cycle equals the length
+    // of the cycle.
+    for cycle in &cycles {
+        assert_eq!(cycle.start, cycle.length);
+    }
+    // We can therefore use least common multiple (LCM) for calculating when we first reach
+    // locations all ending in Z. (I.e. the point where all cycles align.)
+    let part2 = cycles.iter()
+        .map(|cycle| cycle.start.unwrap())
+        .reduce(|acc, n| num::integer::lcm(acc, n))
+        .unwrap();
 
     println!("Day 8 part 2: {}", part2);
 }
