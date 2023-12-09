@@ -3,19 +3,15 @@ use std::path::Path;
 
 use clap::Parser;
 
-mod day1;
-mod day2;
-mod day3;
-mod day4;
-mod day5;
-mod day6;
-mod day7;
-mod day8;
-mod day9;
+mod year2023;
 
 #[derive(Parser, Debug)]
 #[command(author, version, about, long_about = None)]
 struct Args {
+    // Year of the event
+    #[arg(short, long, default_value_t = 2023)]
+    year: u16,
+
     // Day of the challenge
     #[arg(short, long)]
     day: u8,
@@ -26,22 +22,14 @@ struct Args {
 }
 
 fn main() {
-    println!("AoC 2023");
     let args = Args::parse();
+    println!("AoC {}", args.year);
 
     let path = Path::new(&args.input_file);
     let input = read_to_string(&path).unwrap();
 
-    match args.day {
-        1 => day1::solve(input),
-        2 => day2::solve(input),
-        3 => day3::solve(input),
-        4 => day4::solve(input),
-        5 => day5::solve(input),
-        6 => day6::solve(input),
-        7 => day7::solve(input),
-        8 => day8::solve(input),
-        9 => day9::solve(input),
+    match (args.year, args.day) {
+        (2023, day) => year2023::solve(input, day),
         _ => unimplemented!(),
     }
 }
