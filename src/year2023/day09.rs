@@ -1,6 +1,9 @@
 pub fn solve(input: String) {
     fn differences(number_series: &Vec<i64>) -> Vec<i64> {
-        number_series.windows(2).map(|value_pair| value_pair[1] - value_pair[0]).collect()
+        number_series
+            .windows(2)
+            .map(|value_pair| value_pair[1] - value_pair[0])
+            .collect()
     }
 
     // Predicts the numbers (before, after) the given number series.
@@ -16,12 +19,13 @@ pub fn solve(input: String) {
         }
     }
 
-    let (part2, part1) = input.lines()
+    let (part2, part1) = input
+        .lines()
         // Parse the input line (string) into a number series (vector of integers)
         .map(|line| {
             line.split_whitespace()
-                    .map(|s| s.parse::<i64>().unwrap())
-                    .collect::<Vec<i64>>()
+                .map(|s| s.parse::<i64>().unwrap())
+                .collect::<Vec<i64>>()
         })
         // Calculate numbers (before, after) the original series
         .map(|number_series| predict_both(&number_series))

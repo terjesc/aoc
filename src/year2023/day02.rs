@@ -4,7 +4,6 @@ use std::str::FromStr;
 use regex::Regex;
 
 pub fn solve(input: String) {
-
     #[derive(Debug)]
     struct Game {
         id: u32,
@@ -24,11 +23,14 @@ pub fn solve(input: String) {
             let id = caps[1].parse::<u32>().unwrap();
 
             let reveals: Vec<Reveal> = caps[2]
-                    .split(";")
-                    .map(|string| Reveal::from_str(&string).unwrap())
-                    .collect();
+                .split(";")
+                .map(|string| Reveal::from_str(&string).unwrap())
+                .collect();
 
-            Ok(Game { id: id, reveals: reveals })
+            Ok(Game {
+                id: id,
+                reveals: reveals,
+            })
         }
     }
 
@@ -53,7 +55,11 @@ pub fn solve(input: String) {
                 cubes.push((color, count.parse::<u32>().unwrap()));
             }
 
-            let mut reveal = Reveal { red: 0, green: 0, blue: 0 };
+            let mut reveal = Reveal {
+                red: 0,
+                green: 0,
+                blue: 0,
+            };
 
             for (color, count) in cubes {
                 match color {
@@ -68,38 +74,51 @@ pub fn solve(input: String) {
         }
     }
 
-    let games: Vec<Game> = input.lines().map(|line| Game::from_str(&line).unwrap()).collect();
+    let games: Vec<Game> = input
+        .lines()
+        .map(|line| Game::from_str(&line).unwrap())
+        .collect();
 
-    let maximum = Reveal {red: 12, green: 13, blue: 14};
-    let part1: u32 = games.iter()
-            .map(|game| {
-                for reveal in &game.reveals {
-                    if (reveal.red > maximum.red) | (reveal.green > maximum.green) | (reveal.blue > maximum.blue) {
-                        return 0;
-                    }
+    let maximum = Reveal {
+        red: 12,
+        green: 13,
+        blue: 14,
+    };
+    let part1: u32 = games
+        .iter()
+        .map(|game| {
+            for reveal in &game.reveals {
+                if (reveal.red > maximum.red)
+                    | (reveal.green > maximum.green)
+                    | (reveal.blue > maximum.blue)
+                {
+                    return 0;
                 }
-                game.id
-            })
-            .sum();
+            }
+            game.id
+        })
+        .sum();
 
     println!("Day 2 part 1: {}", part1);
 
-    let part2: u32 = games.iter()
-            .map(|game| {
-                let minimum_cube_counts = game.reveals.iter()
-                        .fold(
-                            Reveal { red: 0, green: 0, blue: 0 },
-                            |acc, e| {
-                                Reveal {
-                                    red: max(acc.red, e.red),
-                                    green: max(acc.green, e.green),
-                                    blue: max(acc.blue, e.blue),
-                                }
-                            }
-                        );
-                minimum_cube_counts.red * minimum_cube_counts.green * minimum_cube_counts.blue
-            })
-            .sum();
+    let part2: u32 = games
+        .iter()
+        .map(|game| {
+            let minimum_cube_counts = game.reveals.iter().fold(
+                Reveal {
+                    red: 0,
+                    green: 0,
+                    blue: 0,
+                },
+                |acc, e| Reveal {
+                    red: max(acc.red, e.red),
+                    green: max(acc.green, e.green),
+                    blue: max(acc.blue, e.blue),
+                },
+            );
+            minimum_cube_counts.red * minimum_cube_counts.green * minimum_cube_counts.blue
+        })
+        .sum();
 
     println!("Day 2 part 2: {}", part2);
 }

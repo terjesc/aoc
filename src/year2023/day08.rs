@@ -16,7 +16,10 @@ pub fn solve(input: String) {
 
     for line in input {
         let caps = re.captures(line).unwrap();
-        maps.insert(caps[1].to_string(), (caps[2].to_string(), caps[3].to_string()));
+        maps.insert(
+            caps[1].to_string(),
+            (caps[2].to_string(), caps[3].to_string()),
+        );
     }
 
     let mut current: String = "AAA".to_string();
@@ -42,9 +45,11 @@ pub fn solve(input: String) {
 
     count = 0;
     let mut directions2 = directions.cycle();
-    let mut current: Vec<String> = maps.clone().into_keys()
-            .filter(|k| k.chars().nth(2) == Some('A'))
-            .collect();
+    let mut current: Vec<String> = maps
+        .clone()
+        .into_keys()
+        .filter(|k| k.chars().nth(2) == Some('A'))
+        .collect();
 
     println!("{:?}", current);
 
@@ -54,35 +59,44 @@ pub fn solve(input: String) {
         length: Option<usize>,
     }
 
-    let mut cycles: Vec<Cycle> = vec![Cycle { start: None, length: None }; current.len()];
+    let mut cycles: Vec<Cycle> = vec![
+        Cycle {
+            start: None,
+            length: None
+        };
+        current.len()
+    ];
 
     fn are_all_known(cycles: &Vec<Cycle>) -> bool {
-        cycles.into_iter().all(|cycle| cycle.start.is_some() && cycle.length.is_some())
+        cycles
+            .into_iter()
+            .all(|cycle| cycle.start.is_some() && cycle.length.is_some())
     }
 
     while !are_all_known(&cycles) {
         count += 1;
         let direction = directions2.next().unwrap();
 
-        current = current.iter()
-                .map(|location|{
-                    if let Some((left, right)) = maps.get(location) {
-                        match direction {
-                            'L' => left.clone(),
-                            'R' => right.clone(),
-                            _ => unreachable!(),
-                        }
-                    } else {
-                        panic!("No match for location of {}", location);
+        current = current
+            .iter()
+            .map(|location| {
+                if let Some((left, right)) = maps.get(location) {
+                    match direction {
+                        'L' => left.clone(),
+                        'R' => right.clone(),
+                        _ => unreachable!(),
                     }
-                })
-                .collect();
+                } else {
+                    panic!("No match for location of {}", location);
+                }
+            })
+            .collect();
 
         for (index, location) in current.iter().enumerate() {
             if location.chars().nth(2) == Some('Z') {
                 if cycles[index].start.is_none() {
                     cycles[index].start = Some(count);
-                } else if  cycles[index].length.is_none() {
+                } else if cycles[index].length.is_none() {
                     cycles[index].length = Some(count - cycles[index].start.unwrap());
                 }
             }
@@ -96,7 +110,8 @@ pub fn solve(input: String) {
     }
     // We can therefore use least common multiple (LCM) for calculating when we first reach
     // locations all ending in Z. (I.e. the point where all cycles align.)
-    let part2 = cycles.iter()
+    let part2 = cycles
+        .iter()
         .map(|cycle| cycle.start.unwrap())
         .reduce(|acc, n| num::integer::lcm(acc, n))
         .unwrap();

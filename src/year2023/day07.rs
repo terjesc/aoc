@@ -9,7 +9,11 @@ struct Hand {
 
 impl Hand {
     fn convert_jacks_into_jokers(&mut self) {
-        self.cards = self.cards.iter().map(|&card| if card == 'J' { 'X' } else { card }).collect();
+        self.cards = self
+            .cards
+            .iter()
+            .map(|&card| if card == 'J' { 'X' } else { card })
+            .collect();
     }
 }
 
@@ -29,7 +33,12 @@ impl FromStr for Hand {
 impl Ord for Hand {
     fn cmp(&self, other: &Self) -> Ordering {
         fn hand_cmp(this: &Vec<char>, other: &Vec<char>) -> Ordering {
-            match this.iter().zip(other.iter()).filter(|(this, other)| this != other).next() {
+            match this
+                .iter()
+                .zip(other.iter())
+                .filter(|(this, other)| this != other)
+                .next()
+            {
                 None => Ordering::Equal,
                 Some((&this, &other)) => card_cmp(this, other),
             }
@@ -62,9 +71,7 @@ impl Ord for Hand {
         match self.r#type().cmp(&other.r#type()) {
             Ordering::Less => Ordering::Less,
             Ordering::Greater => Ordering::Greater,
-            Ordering::Equal => {
-                hand_cmp(&self.cards, &other.cards)
-            }
+            Ordering::Equal => hand_cmp(&self.cards, &other.cards),
         }
     }
 }
@@ -131,19 +138,26 @@ enum HandType {
 impl Hand {
     fn r#type(&self) -> HandType {
         // get stats
-        let mut frequencies: Vec<usize> = self.cards.clone()
-                .into_iter()
-                .fold(HashMap::<char, usize>::new(), |mut m, x| {
-                    *m.entry(x).or_default() += 1;
-                    m
-                })
-                .into_iter()
-                .map(|(_, v)| v)
-                .collect();
+        let mut frequencies: Vec<usize> = self
+            .cards
+            .clone()
+            .into_iter()
+            .fold(HashMap::<char, usize>::new(), |mut m, x| {
+                *m.entry(x).or_default() += 1;
+                m
+            })
+            .into_iter()
+            .map(|(_, v)| v)
+            .collect();
         frequencies.sort();
         frequencies.reverse();
 
-        let joker_count = self.cards.clone().into_iter().filter(|&card| card == 'X').count();
+        let joker_count = self
+            .cards
+            .clone()
+            .into_iter()
+            .filter(|&card| card == 'X')
+            .count();
 
         // Observation:
         // It is always best to join all jokers with the largest group of identical non-joker cards
@@ -172,18 +186,19 @@ impl Hand {
 }
 
 pub fn solve(input: String) {
-    let mut hands: Vec<HandWithBid> = input.lines()
-            .map(|line| HandWithBid::from_str(line).unwrap())
-            .collect();
+    let mut hands: Vec<HandWithBid> = input
+        .lines()
+        .map(|line| HandWithBid::from_str(line).unwrap())
+        .collect();
 
     hands.sort();
 
-    let part1: i64 = hands.iter().rev()
-            .enumerate()
-            .map(|(rank, hand)| {
-                (rank + 1) as i64 * hand.bid
-            })
-            .sum();
+    let part1: i64 = hands
+        .iter()
+        .rev()
+        .enumerate()
+        .map(|(rank, hand)| (rank + 1) as i64 * hand.bid)
+        .sum();
 
     println!("Day 7 part 1: {}", part1);
 
@@ -193,12 +208,12 @@ pub fn solve(input: String) {
 
     hands.sort();
 
-    let part2: i64 = hands.iter().rev()
-            .enumerate()
-            .map(|(rank, hand)| {
-                (rank + 1) as i64 * hand.bid
-            })
-            .sum();
+    let part2: i64 = hands
+        .iter()
+        .rev()
+        .enumerate()
+        .map(|(rank, hand)| (rank + 1) as i64 * hand.bid)
+        .sum();
 
     println!("Day 7 part 2: {}", part2);
 }

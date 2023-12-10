@@ -5,7 +5,6 @@ use std::str::FromStr;
 use regex::Regex;
 
 pub fn solve(input: String) {
-
     #[derive(Debug)]
     struct Card {
         id: u32,
@@ -37,34 +36,46 @@ pub fn solve(input: String) {
                 numbers_you_have.insert(value.parse::<u32>().unwrap());
             }
 
-            Ok(Card { id: id, winning_numbers, numbers_you_have })
+            Ok(Card {
+                id: id,
+                winning_numbers,
+                numbers_you_have,
+            })
         }
     }
 
-    let cards: Vec<Card> = input.lines().map(|line| Card::from_str(&line).unwrap()).collect();
+    let cards: Vec<Card> = input
+        .lines()
+        .map(|line| Card::from_str(&line).unwrap())
+        .collect();
 
-    let part1: u32 = cards.iter()
-            .map(|card| {
-                let win_count = card.winning_numbers
-                        .intersection(&card.numbers_you_have)
-                        .count();
+    let part1: u32 = cards
+        .iter()
+        .map(|card| {
+            let win_count = card
+                .winning_numbers
+                .intersection(&card.numbers_you_have)
+                .count();
 
-                if win_count > 0 {
-                    2_u32.pow(win_count as u32 - 1)
-                } else {
-                    0
-                }
-            })
-            .sum();
+            if win_count > 0 {
+                2_u32.pow(win_count as u32 - 1)
+            } else {
+                0
+            }
+        })
+        .sum();
 
     println!("Day 4 part 1: {}", part1);
 
     let mut card_counts: Vec<usize> = vec![1; cards.len()];
 
     for card in cards.iter() {
-        let win_count = card.winning_numbers.intersection(&card.numbers_you_have).count();
+        let win_count = card
+            .winning_numbers
+            .intersection(&card.numbers_you_have)
+            .count();
         if win_count > 0 {
-            for i in card.id as usize .. min(card.id as usize + win_count, card_counts.len()) {
+            for i in card.id as usize..min(card.id as usize + win_count, card_counts.len()) {
                 card_counts[i] += card_counts[card.id as usize - 1];
             }
         }

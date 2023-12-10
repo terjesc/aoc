@@ -5,7 +5,10 @@ pub fn solve(input: String) {
         first.to_digit(10).unwrap() * 10 + last.to_digit(10).unwrap()
     }
 
-    let part1: u32 = input.lines().map(|line| part1_digit(line.to_string())).sum();
+    let part1: u32 = input
+        .lines()
+        .map(|line| part1_digit(line.to_string()))
+        .sum();
 
     println!("Day 1 part 1: {}", part1);
 
@@ -41,19 +44,19 @@ pub fn solve(input: String) {
 
             // Digits spelled out
             if position + 3 < line.len() {
-                if let Some(number) = match_digit_words(&line[position..position+3]) {
+                if let Some(number) = match_digit_words(&line[position..position + 3]) {
                     return Some(number);
                 }
             }
 
             if position + 4 < line.len() {
-                if let Some(number) = match_digit_words(&line[position..position+4]) {
+                if let Some(number) = match_digit_words(&line[position..position + 4]) {
                     return Some(number);
                 }
             }
 
             if position + 5 < line.len() {
-                if let Some(number) = match_digit_words(&line[position..position+5]) {
+                if let Some(number) = match_digit_words(&line[position..position + 5]) {
                     return Some(number);
                 }
             }
@@ -71,19 +74,19 @@ pub fn solve(input: String) {
 
             // Digits spelled out
             if position >= 3 {
-                if let Some(number) = match_digit_words(&line[position-2..=position]) {
+                if let Some(number) = match_digit_words(&line[position - 2..=position]) {
                     return Some(number);
                 }
             }
 
             if position >= 4 {
-                if let Some(number) = match_digit_words(&line[position-3..=position]) {
+                if let Some(number) = match_digit_words(&line[position - 3..=position]) {
                     return Some(number);
                 }
             }
 
             if position >= 5 {
-                if let Some(number) = match_digit_words(&line[position-4..=position]) {
+                if let Some(number) = match_digit_words(&line[position - 4..=position]) {
                     return Some(number);
                 }
             }
@@ -92,21 +95,21 @@ pub fn solve(input: String) {
         }
 
         let first = (0..line.len())
-                .find_map(|index| digit_starting_at(&line, index))
-                .unwrap();
+            .find_map(|index| digit_starting_at(&line, index))
+            .unwrap();
 
-        let last = (0..line.len()).rev()
-                .find_map(|index| digit_ending_at(&line, index))
-                .unwrap();
+        let last = (0..line.len())
+            .rev()
+            .find_map(|index| digit_ending_at(&line, index))
+            .unwrap();
 
         first * 10 + last
     }
 
     let part2: u32 = input
-            .lines()
-            .map(|line| part2_digit(line.to_string()))
-            .sum();
+        .lines()
+        .map(|line| part2_digit(line.to_string()))
+        .sum();
 
     println!("Day 1 part 2: {}", part2);
 }
-

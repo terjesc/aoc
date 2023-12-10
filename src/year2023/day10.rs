@@ -1,5 +1,4 @@
 pub fn solve(input: String) {
-
     #[derive(Clone, Copy)]
     struct Pipe {
         north: bool,
@@ -13,21 +12,64 @@ pub fn solve(input: String) {
         fn from_char(c: char) -> Option<Pipe> {
             match c {
                 '.' => None,
-                'S' => Some(Pipe { north: true, south: true, east: true, west: true, start: true }),
-                '|' => Some(Pipe { north: true, south: true, east: false, west: false, start: false }),
-                '-' => Some(Pipe { north: false, south: false, east: true, west: true, start: false }),
-                'F' => Some(Pipe { north: false, south: true, east: true, west: false, start: false }),
-                'J' => Some(Pipe { north: true, south: false, east: false, west: true, start: false }),
-                'L' => Some(Pipe { north: true, south: false, east: true, west: false, start: false }),
-                '7' => Some(Pipe { north: false, south: true, east: false, west: true, start: false }),
+                'S' => Some(Pipe {
+                    north: true,
+                    south: true,
+                    east: true,
+                    west: true,
+                    start: true,
+                }),
+                '|' => Some(Pipe {
+                    north: true,
+                    south: true,
+                    east: false,
+                    west: false,
+                    start: false,
+                }),
+                '-' => Some(Pipe {
+                    north: false,
+                    south: false,
+                    east: true,
+                    west: true,
+                    start: false,
+                }),
+                'F' => Some(Pipe {
+                    north: false,
+                    south: true,
+                    east: true,
+                    west: false,
+                    start: false,
+                }),
+                'J' => Some(Pipe {
+                    north: true,
+                    south: false,
+                    east: false,
+                    west: true,
+                    start: false,
+                }),
+                'L' => Some(Pipe {
+                    north: true,
+                    south: false,
+                    east: true,
+                    west: false,
+                    start: false,
+                }),
+                '7' => Some(Pipe {
+                    north: false,
+                    south: true,
+                    east: false,
+                    west: true,
+                    start: false,
+                }),
                 _ => unreachable!(),
             }
         }
     }
 
-    let grid: Vec<Vec<Option<Pipe>>> = input.lines()
-            .map(|line| line.chars().map(|c| Pipe::from_char(c)).collect())
-            .collect();
+    let grid: Vec<Vec<Option<Pipe>>> = input
+        .lines()
+        .map(|line| line.chars().map(|c| Pipe::from_char(c)).collect())
+        .collect();
     let dimensions = (grid.len(), grid[0].len());
 
     // Find start position
@@ -111,27 +153,37 @@ pub fn solve(input: String) {
     println!("Day 10 part 1: {}", part1);
 
     fn is_corner_or_start(pipe: &Pipe) -> bool {
-        pipe.start || pipe.north && pipe.east || pipe.north && pipe.west || pipe.south && pipe.east || pipe.south && pipe.west
+        pipe.start
+            || pipe.north && pipe.east
+            || pipe.north && pipe.west
+            || pipe.south && pipe.east
+            || pipe.south && pipe.west
     }
 
     // Calculate a compressed path of only corner pieces, to save some calculation later
-    let corner_path: Vec<(usize, usize)> = path.iter()
-            .filter(|(x, y)| {
-                if let Some(pipe) = grid[*y][*x] {
-                    is_corner_or_start(&pipe)
-                } else {
-                    false
-                }
-            })
-            .cloned()
-            .collect();
+    let corner_path: Vec<(usize, usize)> = path
+        .iter()
+        .filter(|(x, y)| {
+            if let Some(pipe) = grid[*y][*x] {
+                is_corner_or_start(&pipe)
+            } else {
+                false
+            }
+        })
+        .cloned()
+        .collect();
 
     // This algorithm checks if, from the perspective of 'position', tracing the 'path' leaves your
     // net rotation at zero (which means you are outside the path) or at a number of rotations
     // (which means the path surrounds you a number of times.
     fn is_inside_path(position: &(usize, usize), path: &Vec<(usize, usize)>) -> bool {
         #[derive(Clone, Copy, PartialEq)]
-        enum Quadrant { NE, NW, SE, SW }
+        enum Quadrant {
+            NE,
+            NW,
+            SE,
+            SW,
+        }
 
         fn quadrant(a: &(usize, usize), b: &(usize, usize)) -> Quadrant {
             let north: bool = a.1 < b.1;
@@ -148,25 +200,35 @@ pub fn solve(input: String) {
         fn quadrant_rotation(a: &Quadrant, b: &Quadrant) -> i64 {
             match (a, b) {
                 (Quadrant::NE, Quadrant::NW)
-                    | (Quadrant::NW, Quadrant::SW)
-                    | (Quadrant::SW, Quadrant::SE)
-                    | (Quadrant::SE, Quadrant::NE) => 1,
+                | (Quadrant::NW, Quadrant::SW)
+                | (Quadrant::SW, Quadrant::SE)
+                | (Quadrant::SE, Quadrant::NE) => 1,
                 (Quadrant::NW, Quadrant::NE)
-                    | (Quadrant::SW, Quadrant::NW)
-                    | (Quadrant::SE, Quadrant::SW)
-                    | (Quadrant::NE, Quadrant::SE) => -1,
-                _ => if a == b { 0 } else { unreachable!() },
+                | (Quadrant::SW, Quadrant::NW)
+                | (Quadrant::SE, Quadrant::SW)
+                | (Quadrant::NE, Quadrant::SE) => -1,
+                _ => {
+                    if a == b {
+                        0
+                    } else {
+                        unreachable!()
+                    }
+                }
             }
         }
 
         let last_quadrant = quadrant(position, path.last().unwrap());
 
-        let (_, rotation) = path.iter()
-                .fold((last_quadrant, 0i64), |acc, path_position| {
-                    let (last_quadrant, rotation) = acc;
-                    let quadrant = quadrant(&position, &path_position);
-                    (quadrant, rotation + quadrant_rotation(&last_quadrant, &quadrant))
-                });
+        let (_, rotation) = path
+            .iter()
+            .fold((last_quadrant, 0i64), |acc, path_position| {
+                let (last_quadrant, rotation) = acc;
+                let quadrant = quadrant(&position, &path_position);
+                (
+                    quadrant,
+                    rotation + quadrant_rotation(&last_quadrant, &quadrant),
+                )
+            });
 
         // If rotation is zero then we are outside the path. Otherwise, we are inside.
         rotation != 0

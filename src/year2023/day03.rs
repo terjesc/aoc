@@ -1,7 +1,6 @@
 use std::collections::HashMap;
 
 pub fn solve(input: String) {
-
     // APPROACH
     // 1. shove everything into a 2D character array
     // 2. iterate through that in search of (series of) digits
@@ -24,7 +23,6 @@ pub fn solve(input: String) {
     for (y_index, row) in grid.iter().enumerate() {
         for (x_index, character) in row.iter().enumerate() {
             if character.is_digit(10) {
-
                 // If previous character was digit then this number is already registered
                 if x_index >= 1 && grid[y_index][x_index - 1].is_digit(10) {
                     continue;
@@ -45,7 +43,11 @@ pub fn solve(input: String) {
                 }
 
                 // Add number to list of numbers
-                all_numbers.push(PartNumber { position: (x_index, y_index), length, value});
+                all_numbers.push(PartNumber {
+                    position: (x_index, y_index),
+                    length,
+                    value,
+                });
             }
         }
     }
@@ -54,7 +56,11 @@ pub fn solve(input: String) {
         let mut neighbors: Vec<(usize, usize)> = Vec::new();
 
         let x_span = (
-            if n.position.0 > 0 { n.position.0 - 1 } else { 0 },
+            if n.position.0 > 0 {
+                n.position.0 - 1
+            } else {
+                0
+            },
             if n.position.0 + n.length < dimensions.0 {
                 n.position.0 + n.length
             } else {
@@ -86,15 +92,18 @@ pub fn solve(input: String) {
     }
 
     // Filter numbers based on the occurence of special symbols around them
-    let valid_part_numbers: Vec<PartNumber> = all_numbers.into_iter()
-            .filter(|n| {
-                let validates_number = |x: usize, y: usize| -> bool {
-                    let character = grid[y][x];
-                    !character.is_digit(10) && character != '.'
-                };
-                neighbors(n, dimensions).iter().any(|(x, y)| validates_number(*x, *y))
-            })
-            .collect();
+    let valid_part_numbers: Vec<PartNumber> = all_numbers
+        .into_iter()
+        .filter(|n| {
+            let validates_number = |x: usize, y: usize| -> bool {
+                let character = grid[y][x];
+                !character.is_digit(10) && character != '.'
+            };
+            neighbors(n, dimensions)
+                .iter()
+                .any(|(x, y)| validates_number(*x, *y))
+        })
+        .collect();
 
     let part1: u32 = valid_part_numbers.iter().map(|n| n.value).sum();
 
@@ -127,15 +136,16 @@ pub fn solve(input: String) {
     }
 
     // For each cog position, if more than one number, multiply them and sum.
-    let part2: usize = cog_positions.iter()
-            .map(|(_, numbers)| {
-                if numbers.len() >= 2 {
-                    numbers.iter().copied().reduce(|acc, e| acc * e).unwrap()
-                } else {
-                    0
-                }
-            })
-            .sum();
+    let part2: usize = cog_positions
+        .iter()
+        .map(|(_, numbers)| {
+            if numbers.len() >= 2 {
+                numbers.iter().copied().reduce(|acc, e| acc * e).unwrap()
+            } else {
+                0
+            }
+        })
+        .sum();
 
     println!("Day 3 part 2: {}", part2);
 }

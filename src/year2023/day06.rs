@@ -1,18 +1,19 @@
-
 pub fn solve(input: String) {
     let mut input = input.lines();
-    
+
     // Read times
     let (_label, times) = input.next().unwrap().split_once(":").unwrap();
     let time_for_part2 = times;
-    let times: Vec<i64> = times.split_whitespace()
+    let times: Vec<i64> = times
+        .split_whitespace()
         .map(|number| number.parse::<i64>().unwrap())
         .collect();
 
     // Read distances
     let (_label, distances) = input.next().unwrap().split_once(":").unwrap();
     let distance_for_part2 = distances;
-    let distances: Vec<i64> = distances.split_whitespace()
+    let distances: Vec<i64> = distances
+        .split_whitespace()
         .map(|number| number.parse::<i64>().unwrap())
         .collect();
 
@@ -29,13 +30,13 @@ pub fn solve(input: String) {
 
         for hold_time in 1..times[i] {
             let distance = calculate_distance(times[i], hold_time);
-//            println!("Time {}, hold time {}, distance {}", times[i], hold_time, distance);
+            //            println!("Time {}, hold time {}, distance {}", times[i], hold_time, distance);
             if distance > distances[i] {
                 record_count += 1;
             }
         }
 
-//        println!("{} hold times beat the record distance of {}", record_count, distances[i]);
+        //        println!("{} hold times beat the record distance of {}", record_count, distances[i]);
         record_count_product *= record_count;
     }
 
