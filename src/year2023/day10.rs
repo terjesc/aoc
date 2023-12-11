@@ -68,7 +68,7 @@ pub fn solve(input: String) {
 
     let grid: Vec<Vec<Option<Pipe>>> = input
         .lines()
-        .map(|line| line.chars().map(|c| Pipe::from_char(c)).collect())
+        .map(|line| line.chars().map(Pipe::from_char).collect())
         .collect();
     let dimensions = (grid.len(), grid[0].len());
 
@@ -176,7 +176,7 @@ pub fn solve(input: String) {
     // This algorithm checks if, from the perspective of 'position', tracing the 'path' leaves your
     // net rotation at zero (which means you are outside the path) or at a number of rotations
     // (which means the path surrounds you a number of times.
-    fn is_inside_path(position: &(usize, usize), path: &Vec<(usize, usize)>) -> bool {
+    fn is_inside_path(position: &(usize, usize), path: &[(usize, usize)]) -> bool {
         #[derive(Clone, Copy, PartialEq)]
         enum Quadrant {
             NE,
@@ -223,7 +223,7 @@ pub fn solve(input: String) {
             .iter()
             .fold((last_quadrant, 0i64), |acc, path_position| {
                 let (last_quadrant, rotation) = acc;
-                let quadrant = quadrant(&position, &path_position);
+                let quadrant = quadrant(position, path_position);
                 (
                     quadrant,
                     rotation + quadrant_rotation(&last_quadrant, &quadrant),

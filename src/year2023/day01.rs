@@ -1,7 +1,7 @@
 pub fn solve(input: String) {
     fn part1_digit(line: String) -> u32 {
-        let first = line.chars().find(|c| c.is_digit(10)).unwrap();
-        let last = line.chars().rfind(|c| c.is_digit(10)).unwrap();
+        let first = line.chars().find(|c| c.is_ascii_digit()).unwrap();
+        let last = line.chars().rfind(|c| c.is_ascii_digit()).unwrap();
         first.to_digit(10).unwrap() * 10 + last.to_digit(10).unwrap()
     }
 
@@ -38,7 +38,7 @@ pub fn solve(input: String) {
             let letters: Vec<char> = line.chars().collect();
 
             // Digits 0 through 9
-            if letters[position].is_digit(10) {
+            if letters[position].is_ascii_digit() {
                 return letters[position].to_digit(10);
             }
 
@@ -64,11 +64,11 @@ pub fn solve(input: String) {
             None
         }
 
-        fn digit_ending_at(line: &String, position: usize) -> Option<u32> {
+        fn digit_ending_at(line: &str, position: usize) -> Option<u32> {
             let letters: Vec<char> = line.chars().collect();
 
             // Digits 0 through 9
-            if letters[position].is_digit(10) {
+            if letters[position].is_ascii_digit() {
                 return letters[position].to_digit(10);
             }
 

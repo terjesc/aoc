@@ -67,9 +67,9 @@ pub fn solve(input: String) {
         current.len()
     ];
 
-    fn are_all_known(cycles: &Vec<Cycle>) -> bool {
+    fn are_all_known(cycles: &[Cycle]) -> bool {
         cycles
-            .into_iter()
+            .iter()
             .all(|cycle| cycle.start.is_some() && cycle.length.is_some())
     }
 
@@ -113,7 +113,7 @@ pub fn solve(input: String) {
     let part2 = cycles
         .iter()
         .map(|cycle| cycle.start.unwrap())
-        .reduce(|acc, n| num::integer::lcm(acc, n))
+        .reduce(num::integer::lcm)
         .unwrap();
 
     println!("Day 8 part 2: {}", part2);

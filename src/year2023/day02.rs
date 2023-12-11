@@ -23,14 +23,11 @@ pub fn solve(input: String) {
             let id = caps[1].parse::<u32>().unwrap();
 
             let reveals: Vec<Reveal> = caps[2]
-                .split(";")
-                .map(|string| Reveal::from_str(&string).unwrap())
+                .split(';')
+                .map(|string| Reveal::from_str(string).unwrap())
                 .collect();
 
-            Ok(Game {
-                id: id,
-                reveals: reveals,
-            })
+            Ok(Game { id, reveals })
         }
     }
 
@@ -76,7 +73,7 @@ pub fn solve(input: String) {
 
     let games: Vec<Game> = input
         .lines()
-        .map(|line| Game::from_str(&line).unwrap())
+        .map(|line| Game::from_str(line).unwrap())
         .collect();
 
     let maximum = Reveal {

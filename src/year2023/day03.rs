@@ -22,9 +22,9 @@ pub fn solve(input: String) {
     let mut all_numbers: Vec<PartNumber> = Vec::new();
     for (y_index, row) in grid.iter().enumerate() {
         for (x_index, character) in row.iter().enumerate() {
-            if character.is_digit(10) {
+            if character.is_ascii_digit() {
                 // If previous character was digit then this number is already registered
-                if x_index >= 1 && grid[y_index][x_index - 1].is_digit(10) {
+                if x_index >= 1 && grid[y_index][x_index - 1].is_ascii_digit() {
                     continue;
                 }
 
@@ -33,10 +33,10 @@ pub fn solve(input: String) {
                 let mut length = 0;
                 for x in x_index..dimensions.1 {
                     let character = grid[y_index][x];
-                    if character.is_digit(10) {
-                        length = length + 1;
-                        value = value * 10;
-                        value = value + character.to_digit(10).unwrap();
+                    if character.is_ascii_digit() {
+                        length += 1;
+                        value *= 10;
+                        value += character.to_digit(10).unwrap();
                     } else {
                         break;
                     }
@@ -97,7 +97,7 @@ pub fn solve(input: String) {
         .filter(|n| {
             let validates_number = |x: usize, y: usize| -> bool {
                 let character = grid[y][x];
-                !character.is_digit(10) && character != '.'
+                !character.is_ascii_digit() && character != '.'
             };
             neighbors(n, dimensions)
                 .iter()
@@ -128,7 +128,7 @@ pub fn solve(input: String) {
 
     // Index neighboring numbers
     for number in &valid_part_numbers {
-        for neighbor in neighbors(&number, dimensions) {
+        for neighbor in neighbors(number, dimensions) {
             if let Some(n) = cog_positions.get_mut(&neighbor) {
                 n.push(number.value as usize);
             }
@@ -137,8 +137,8 @@ pub fn solve(input: String) {
 
     // For each cog position, if more than one number, multiply them and sum.
     let part2: usize = cog_positions
-        .iter()
-        .map(|(_, numbers)| {
+        .values()
+        .map(|numbers| {
             if numbers.len() >= 2 {
                 numbers.iter().copied().reduce(|acc, e| acc * e).unwrap()
             } else {

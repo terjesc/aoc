@@ -37,7 +37,7 @@ pub fn solve(input: String) {
             }
 
             Ok(Card {
-                id: id,
+                id,
                 winning_numbers,
                 numbers_you_have,
             })

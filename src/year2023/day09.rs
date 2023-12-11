@@ -1,5 +1,5 @@
 pub fn solve(input: String) {
-    fn differences(number_series: &Vec<i64>) -> Vec<i64> {
+    fn differences(number_series: &[i64]) -> Vec<i64> {
         number_series
             .windows(2)
             .map(|value_pair| value_pair[1] - value_pair[0])
@@ -7,7 +7,7 @@ pub fn solve(input: String) {
     }
 
     // Predicts the numbers (before, after) the given number series.
-    fn predict_both(number_series: &Vec<i64>) -> (i64, i64) {
+    fn predict_both(number_series: &[i64]) -> (i64, i64) {
         if number_series.iter().all(|&n| n == 0) {
             (0, 0)
         } else {

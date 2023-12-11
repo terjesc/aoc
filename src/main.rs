@@ -26,7 +26,7 @@ fn main() {
     println!("AoC {}", args.year);
 
     let path = Path::new(&args.input_file);
-    let input = read_to_string(&path).unwrap();
+    let input = read_to_string(path).unwrap();
 
     match (args.year, args.day) {
         (2023, day) => year2023::solve(input, day),
