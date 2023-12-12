@@ -9,6 +9,7 @@ mod day08;
 mod day09;
 mod day10;
 mod day11;
+mod day12;
 
 pub fn solve(input: String, day: u8) {
     match day {
@@ -23,6 +24,7 @@ pub fn solve(input: String, day: u8) {
         9 => day09::solve(input),
         10 => day10::solve(input),
         11 => day11::solve(input),
+        12 => day12::solve(input),
         _ => unimplemented!(),
     }
 }
