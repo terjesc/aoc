@@ -16,7 +16,7 @@ pub fn solve(input: String) {
     let mut input = input.lines();
 
     // Read seeds
-    let (_label, seeds) = input.next().unwrap().split_once(":").unwrap();
+    let (_label, seeds) = input.next().unwrap().split_once(':').unwrap();
     let seeds: Vec<i64> = seeds
         .split_whitespace()
         .map(|number| number.parse::<i64>().unwrap())
@@ -31,25 +31,22 @@ pub fn solve(input: String) {
     // length), i.e. that the line heading before the map numbers are already read.
     fn read_conversion_map(input: &mut std::str::Lines) -> ConversionMap {
         let mut ranges: Vec<ConversionRange> = Vec::new();
-        loop {
-            if let Some(line) = input.next() {
-                if line == "" {
-                    break;
-                }
-                let mapping: Vec<i64> = line
-                    .split_whitespace()
-                    .map(|number| number.parse::<i64>().unwrap())
-                    .collect();
-                let (destination_start, source_start, range_length) =
-                    (mapping[0], mapping[1], mapping[2]);
-                ranges.push(ConversionRange {
-                    start: source_start,
-                    end: source_start + range_length - 1,
-                    offset: destination_start - source_start,
-                });
-            } else {
+
+        for line in input.by_ref() {
+            if line.is_empty() {
                 break;
             }
+            let mapping: Vec<i64> = line
+                .split_whitespace()
+                .map(|number| number.parse::<i64>().unwrap())
+                .collect();
+            let (destination_start, source_start, range_length) =
+                (mapping[0], mapping[1], mapping[2]);
+            ranges.push(ConversionRange {
+                start: source_start,
+                end: source_start + range_length - 1,
+                offset: destination_start - source_start,
+            });
         }
 
         ConversionMap { map: ranges }
@@ -133,8 +130,7 @@ pub fn solve(input: String) {
 
         // Handle all input ranges
         for input_range in acc {
-            let mut remaining_range: Vec<(i64, i64)> = Vec::new();
-            remaining_range.push(input_range);
+            let mut remaining_range: Vec<(i64, i64)> = vec![input_range];
 
             // Iterate through conversion map ranges
             for range in map.map.iter() {

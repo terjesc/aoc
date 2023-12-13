@@ -46,7 +46,7 @@ pub fn solve(input: String) {
 
     let cards: Vec<Card> = input
         .lines()
-        .map(|line| Card::from_str(&line).unwrap())
+        .map(|line| Card::from_str(line).unwrap())
         .collect();
 
     let part1: u32 = cards

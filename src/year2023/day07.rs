@@ -32,12 +32,11 @@ impl FromStr for Hand {
 
 impl Ord for Hand {
     fn cmp(&self, other: &Self) -> Ordering {
-        fn hand_cmp(this: &Vec<char>, other: &Vec<char>) -> Ordering {
+        fn hand_cmp(this: &[char], other: &[char]) -> Ordering {
             match this
                 .iter()
                 .zip(other.iter())
-                .filter(|(this, other)| this != other)
-                .next()
+                .find(|(this, other)| this != other)
             {
                 None => Ordering::Equal,
                 Some((&this, &other)) => card_cmp(this, other),
@@ -101,7 +100,7 @@ impl FromStr for HandWithBid {
     type Err = ParseHandWithBidError;
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
-        if let Some((hand, bid)) = s.split_once(" ") {
+        if let Some((hand, bid)) = s.split_once(' ') {
             Ok(HandWithBid {
                 hand: Hand::from_str(hand).unwrap(),
                 bid: bid.parse::<i64>().unwrap(),
@@ -146,8 +145,7 @@ impl Hand {
                 *m.entry(x).or_default() += 1;
                 m
             })
-            .into_iter()
-            .map(|(_, v)| v)
+            .into_values()
             .collect();
         frequencies.sort();
         frequencies.reverse();

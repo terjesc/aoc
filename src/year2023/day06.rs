@@ -2,7 +2,7 @@ pub fn solve(input: String) {
     let mut input = input.lines();
 
     // Read times
-    let (_label, times) = input.next().unwrap().split_once(":").unwrap();
+    let (_label, times) = input.next().unwrap().split_once(':').unwrap();
     let time_for_part2 = times;
     let times: Vec<i64> = times
         .split_whitespace()
@@ -10,7 +10,7 @@ pub fn solve(input: String) {
         .collect();
 
     // Read distances
-    let (_label, distances) = input.next().unwrap().split_once(":").unwrap();
+    let (_label, distances) = input.next().unwrap().split_once(':').unwrap();
     let distance_for_part2 = distances;
     let distances: Vec<i64> = distances
         .split_whitespace()
