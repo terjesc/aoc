@@ -1,4 +1,5 @@
 use std::cmp::min;
+use std::collections::HashMap;
 
 use regex::Regex;
 
@@ -120,37 +121,48 @@ fn count_possible_partitions(records: &Vec<(Vec<char>, Vec<usize>)>) -> usize {
 fn count_possible_partitions_improved(records: &Vec<(Vec<char>, Vec<usize>)>) -> usize {
     records
         .iter()
-        .map(|(record, partition)| {
-            println!("Trying to match {:?} to {:?}", record, partition);
-            calculate_combination_count(record, partition)
-        })
-        .inspect(|n| println!("Count: {}", n))
+        .map(|(record, partition)| calculate_combination_count(record, partition))
         .sum()
 }
 
 fn calculate_combination_count(record: &Vec<char>, partition: &Vec<usize>) -> usize {
-    // Observation: dots ('.') creates "islands" in-between, where partitions must fit
-    // Observation: a '?' next to a series of '#' of "correct" length is equivalent to a '.'
-    // Observation: We could start from the beginning, and try to fit, but if we don't return 0
-
     fn combinations(
+        // Cache
+        cache: &mut HashMap<(Vec<char>, Vec<usize>), usize>,
         // The remaining record to match
         record: &[char],
         // The remaining partitions to match
         partitions: &[usize],
     ) -> usize {
-        //println!("Matching {:?} / {:?}", record, partitions);
+        // Check cache
+        if let Some(&value) = cache.get(&(
+            record.iter().map(|r| r.clone()).collect(),
+            partitions.iter().map(|p| p.clone()).collect(),
+        )) {
+            return value;
+        }
+
+        // Helper function for caching results before returning them
+        let cache_result =
+            |result: usize, cache: &mut HashMap<(Vec<char>, Vec<usize>), usize>| -> usize {
+                cache.insert(
+                    (
+                        record.iter().map(|r| r.clone()).collect(),
+                        partitions.iter().map(|p| p.clone()).collect(),
+                    ),
+                    result,
+                );
+                result
+            };
 
         // If there are no partitions left, we either have one match, or we have none:
         if partitions.is_empty() {
             if record.iter().filter(|&c| *c == '#').count() == 0 {
                 // No more '#' means we do have a valid combination.
-                //println!("No more partitions, and no '#' in need of one; we have one match.");
-                return 1;
+                return cache_result(1, cache);
             } else {
                 // Remaining '#' but no partitions means the combination is invalid.
-                //println!("No more partitions, but one or more '#' in need of one; not a match.");
-                return 0;
+                return cache_result(0, cache);
             }
         }
 
@@ -158,8 +170,7 @@ fn calculate_combination_count(record: &Vec<char>, partition: &Vec<usize>) -> us
         let earliest_start = record.iter().position(|&c| c == '?' || c == '#');
         if earliest_start.is_none() {
             // There are no '?' or '#' left for the remaining partitions
-            //println!("No '?' or '#' left for the remaining partitions ({:?}).", partitions);
-            return 0;
+            return cache_result(0, cache);
         }
         let earliest_start = earliest_start.unwrap();
 
@@ -170,20 +181,20 @@ fn calculate_combination_count(record: &Vec<char>, partition: &Vec<usize>) -> us
         };
 
         let earliest_segment = &record[earliest_start..latest_end];
-        //println!("Earliest for fitting {}: {:?}", partitions[0], earliest_segment);
 
         // If the earliest segment cannot hold the first partition…
         if earliest_segment.len() < partitions[0] {
             if earliest_segment.iter().any(|&c| c == '#') {
                 // …and there is at least one '#' involved, then this branch has no solutions,
                 // since that '#' cannot be part of the first partition.
-                //println!("Segment too short for the partition; no solutions possible.");
-                return 0;
+                return cache_result(0, cache);
             } else {
                 // …and there are only '?' involved, then there may be solutions further on,
                 // and all those '?' are '.'.
-                //println!("Segment too short for the partition; continue from next segment.");
-                return combinations(&record[latest_end..], partitions);
+                return cache_result(
+                    combinations(cache, &record[latest_end..], partitions),
+                    cache,
+                );
             }
         }
 
@@ -208,7 +219,7 @@ fn calculate_combination_count(record: &Vec<char>, partition: &Vec<usize>) -> us
                 }
             } else if record[one_after] != '#' {
                 let next_start = one_after + 1;
-                count += combinations(&record[next_start..], &partitions[1..]);
+                count += combinations(cache, &record[next_start..], &partitions[1..]);
             }
         }
 
@@ -216,41 +227,15 @@ fn calculate_combination_count(record: &Vec<char>, partition: &Vec<usize>) -> us
         if earliest_segment.iter().all(|&c| c == '?') {
             let next_start = latest_end + 1;
             if next_start < record.len() {
-                count += combinations(&record[next_start..], &partitions);
+                count += combinations(cache, &record[next_start..], &partitions);
             }
         }
 
-        count
-
-        // Observations:
-        // - The first partition must be followed immediately by a '?' or '.'
-
-        // Observation:
-        // - If the first group of continuous '?' is too small for the partition, it is all '.'
-        // - If the first continuous group of '?' and '#' is too small for the partition,
-        // then there is no solutions to the partitioning (whole branch can be pruned: return 0)
-
-        // Approach:
-        // 1. find the first group of '?' and '#'
-        // 2. if all '?':
-        // 2.b take all positions where a group of partitions[0] could start,
-        //      and sum the records starting one later (for securing a '.' in-between)
-        //      and with the rest of partitions
-        // 3. if combination of '?' and '#'
-        // 3.b take all positions where a group of partitions[0] could start,
-        //      taking into account that the first '#' must participate,
-        //      and the character immediately following the partition must not be '#'
-        //      and sum the records starting one later (for securing a '.' in-between)
-        //      and with the rest of partitions
-
-        //
-        // TODO
-        // For each match of a first partition, get the number of sub-combinations and sum them
-
-        //0
+        cache_result(count, cache)
     }
 
-    combinations(record, partition)
+    let mut cache = HashMap::new();
+    combinations(&mut cache, record, partition)
 }
 
 fn unfold(records: &[(Vec<char>, Vec<usize>)]) -> Vec<(Vec<char>, Vec<usize>)> {
