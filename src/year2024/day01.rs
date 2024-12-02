@@ -24,7 +24,7 @@ pub fn solve(input: String) {
     }
 
     let part2: i32 = left_list.into_iter().fold(0, |acc, number| {
-        acc + number * occurences.get(&number).map(|number| *number).unwrap_or(0)
+        acc + number * occurences.get(&number).copied().unwrap_or(0)
     });
 
     println!("Day 1 part 2: {}", part2);

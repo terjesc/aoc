@@ -1,21 +1,21 @@
 pub fn solve(input: String) {
-    fn is_safe(series: &Vec<i32>) -> bool {
+    fn is_safe(series: &[i32]) -> bool {
         #[derive(PartialEq)]
         enum Direction {
-            DOWN,
-            UP,
+            Down,
+            Up,
         }
 
         fn is_step_small_enough(first: &i32, last: &i32) -> bool {
             let diff = num::abs(first - last);
-            diff >= 1 && diff <= 3
+            (1..=3).contains(&diff)
         }
 
         fn direction_of_step(first: &i32, last: &i32) -> Direction {
             if first < last {
-                Direction::UP
+                Direction::Up
             } else {
-                Direction::DOWN
+                Direction::Down
             }
         }
 
@@ -34,27 +34,29 @@ pub fn solve(input: String) {
         .map(|line| {
             line.split_whitespace()
                 .map(|number| number.parse::<i32>().unwrap())
-                .collect()
+                .collect::<Vec<_>>()
         })
         .filter(|series| is_safe(series))
         .count();
 
     println!("Day 2 part 1: {}", part1);
 
-    fn is_safe_dampened(series: &Vec<i32>) -> bool {
-        fn dampened_permutations(series: &Vec<i32>) -> Vec<Vec<i32>> {
+    fn is_safe_dampened(series: &[i32]) -> bool {
+        fn dampened_permutations(series: &[i32]) -> Vec<Vec<i32>> {
             let mut permutations: Vec<Vec<i32>> = Vec::new();
 
             permutations.push(series.to_vec());
 
             for i in 0..series.len() {
                 let mut permutation: Vec<i32> = Vec::new();
-                for j in 0..i {
-                    permutation.push(series[j]);
+
+                for number in series.iter().take(i) {
+                    permutation.push(*number);
                 }
-                for j in i + 1..series.len() {
-                    permutation.push(series[j]);
+                for number in series.iter().skip(i + 1) {
+                    permutation.push(*number);
                 }
+
                 assert!(permutation.len() == series.len() - 1);
                 permutations.push(permutation);
             }
@@ -72,7 +74,7 @@ pub fn solve(input: String) {
         .map(|line| {
             line.split_whitespace()
                 .map(|number| number.parse::<i32>().unwrap())
-                .collect()
+                .collect::<Vec<_>>()
         })
         .filter(|series| is_safe_dampened(series))
         .count();
