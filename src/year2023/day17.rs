@@ -70,7 +70,7 @@ struct State {
 }
 
 fn path_cost_of_least_heat_loss(
-    heat_loss_map: &Vec<Vec<usize>>,
+    heat_loss_map: &[Vec<usize>],
     start: (usize, usize),
     goal: (usize, usize),
     valid_straight_range: (usize, usize),

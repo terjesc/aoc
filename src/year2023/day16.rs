@@ -49,7 +49,7 @@ impl Direction {
 }
 
 fn calculate_energization(
-    mirrors: &Vec<Vec<char>>,
+    mirrors: &[Vec<char>],
     start: (usize, usize),
     start_direction: Direction,
 ) -> usize {

@@ -34,7 +34,7 @@ pub fn solve(input: String) {
         // * For each position from end of string, check if it is the end of a digit.
         //   Short-circuit once one is found. This is the second digit.
 
-        fn digit_starting_at(line: &String, position: usize) -> Option<u32> {
+        fn digit_starting_at(line: &str, position: usize) -> Option<u32> {
             let letters: Vec<char> = line.chars().collect();
 
             // Digits 0 through 9

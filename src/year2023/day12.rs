@@ -118,14 +118,14 @@ fn count_possible_partitions(records: &Vec<(Vec<char>, Vec<usize>)>) -> usize {
     count
 }
 
-fn count_possible_partitions_improved(records: &Vec<(Vec<char>, Vec<usize>)>) -> usize {
+fn count_possible_partitions_improved(records: &[(Vec<char>, Vec<usize>)]) -> usize {
     records
         .iter()
         .map(|(record, partition)| calculate_combination_count(record, partition))
         .sum()
 }
 
-fn calculate_combination_count(record: &Vec<char>, partition: &Vec<usize>) -> usize {
+fn calculate_combination_count(record: &[char], partition: &[usize]) -> usize {
     fn combinations(
         // Cache
         cache: &mut HashMap<(Vec<char>, Vec<usize>), usize>,
@@ -135,23 +135,14 @@ fn calculate_combination_count(record: &Vec<char>, partition: &Vec<usize>) -> us
         partitions: &[usize],
     ) -> usize {
         // Check cache
-        if let Some(&value) = cache.get(&(
-            record.iter().map(|r| r.clone()).collect(),
-            partitions.iter().map(|p| p.clone()).collect(),
-        )) {
+        if let Some(&value) = cache.get(&(record.to_vec(), partitions.to_vec())) {
             return value;
         }
 
         // Helper function for caching results before returning them
         let cache_result =
             |result: usize, cache: &mut HashMap<(Vec<char>, Vec<usize>), usize>| -> usize {
-                cache.insert(
-                    (
-                        record.iter().map(|r| r.clone()).collect(),
-                        partitions.iter().map(|p| p.clone()).collect(),
-                    ),
-                    result,
-                );
+                cache.insert((record.to_vec(), partitions.to_vec()), result);
                 result
             };
 
@@ -227,7 +218,7 @@ fn calculate_combination_count(record: &Vec<char>, partition: &Vec<usize>) -> us
         if earliest_segment.iter().all(|&c| c == '?') {
             let next_start = latest_end + 1;
             if next_start < record.len() {
-                count += combinations(cache, &record[next_start..], &partitions);
+                count += combinations(cache, &record[next_start..], partitions);
             }
         }
 
