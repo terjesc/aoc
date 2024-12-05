@@ -10,7 +10,7 @@ pub fn solve(input: String) {
         .map(|capture| capture[1].parse::<usize>().unwrap() * capture[2].parse::<usize>().unwrap())
         .sum();
 
-    println!("Day 1 part 1: {}", part1);
+    println!("Day 3 part 1: {}", part1);
 
     // Find the parts of the input that should be included.
     // First up to the first "don't()".
@@ -48,5 +48,5 @@ pub fn solve(input: String) {
         })
         .sum();
 
-    println!("Day 1 part 2: {}", part2);
+    println!("Day 3 part 2: {}", part2);
 }
