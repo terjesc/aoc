@@ -3,6 +3,7 @@ use std::path::Path;
 
 use clap::Parser;
 
+mod utils;
 mod year2023;
 mod year2024;
 
